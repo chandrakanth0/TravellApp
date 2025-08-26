@@ -4,7 +4,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const fs = require('fs').promises;
 const path = require('path');
-
+require('dotenv').config({
+  path: path.resolve(__dirname, '..', '.env'), // go up from /src to /server
+});
 const app = express();
 
 // ---- SIMPLE CONFIG ----
@@ -105,8 +107,7 @@ const axios = require('axios');
 const SYSTEM_PROMPT = `
 You are a friendly travel itinerary planner. 
 Given a user's prompt, suggest a practical plan with times for travel, meals, and activities.
-Use concise bullet points and include a short summary. Keep responses under ~300 words unless asked for more.
-`;
+Use concise bullet points and include a short summary.`;
 
 // ---- AI (Hugging Face Router, static token & model) ----
 // drop this in the same file where `app` is defined (e.g., server.js)
@@ -119,7 +120,7 @@ app.post('/api/ai', async (req, res) => {
     // STATIC creds/model (as requested) — paste your real token here:
     const HF_TOKEN = process.env.HF_API_TOKEN; // <- put your token
     const MODEL = process.env.HF_MODEL;
-
+console.log(HF_TOKEN,MODEL);
     // Build OpenAI-style messages for the Router
     const messages = [
       { role: 'system', content: SYSTEM_PROMPT },
@@ -141,7 +142,7 @@ app.post('/api/ai', async (req, res) => {
         messages,
         temperature: 0.7,
         top_p: 0.9,
-        max_tokens: 400,
+        max_tokens: 2000,
       }),
     });
 

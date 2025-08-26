@@ -5,5 +5,12 @@
     "email": "vaishnavibk4@gmail.com",
     "passwordHash": "$2a$10$zWZ3QgZ.GgSbMYHIBqEjbOI5OZDN04zgE43miWH1gG.b675sqFdSm",
     "createdAt": "2025-08-26T22:48:29.175Z"
+  },
+  {
+    "id": "usr_met6ddnu",
+    "name": "chandrakanth",
+    "email": "chandrakanthchandru0799@gmail.com",
+    "passwordHash": "$2a$10$EvHTL1j0z6/r0XliEYyMM.HtRJ2seQ9wgp3PL2QW97yzJ2lWArf7W",
+    "createdAt": "2025-08-26T23:26:23.850Z"
   }
 ]

@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 
 export default function AiWidget() {
   const [open, setOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [chat, setChat] = useState([
     {
       role: 'assistant',
@@ -16,11 +17,10 @@ export default function AiWidget() {
   const [loading, setLoading] = useState(false);
   const scrollerRef = useRef(null);
 
-  // auto-scroll to bottom on new messages
   useEffect(() => {
     const el = scrollerRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [chat, open]);
+  }, [chat, open, expanded]);
 
   async function send() {
     const prompt = input.trim();
@@ -40,7 +40,7 @@ export default function AiWidget() {
         },
         body: JSON.stringify({
           prompt,
-          history: next.slice(-6), // send short history
+          history: next.slice(-6),
         }),
       });
       const data = await res.json();
@@ -68,79 +68,75 @@ export default function AiWidget() {
     }
   }
 
+  const panelClass = `
+    fixed z-50 overflow-hidden rounded-2xl border bg-white shadow-2xl flex flex-col
+    ${expanded ? 'inset-4 h-[85vh]' : 'bottom-24 right-4 w-[min(92vw,560px)] h-[70vh]'}
+  `;
+
   return (
     <>
-      {/* Floating button */}
-      {/* <button
-        onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-23 right-4 z-50 rounded-full bg-slate-900 px-4 py-3 text-white shadow-lg hover:bg-slate-800"
-        title="Ask AI"
-      >
-        🤖 Ask AI
-      </button> */}
-      {/* Floating button with rotating gradient border */}
-
-
       {/* Floating Ask AI button (UI-friendly gradient border) */}
-<div className="fixed bottom-28 right-5 z-50">
-  <button
-    onClick={() => setOpen(v => !v)}
-    title="Ask AI"
-    aria-label="Ask AI"
-    className="
-      group relative inline-flex h-12 w-[10rem] items-center justify-center
-      overflow-hidden rounded-2xl
-      shadow-[0_10px_20px_rgba(2,6,23,.12)] transition-transform duration-200
-      active:scale-[0.98]
-    "
-  >
-    {/* Rotating gradient ring */}
-    <span
-      className="
-        pointer-events-none absolute inset-0
-        bg-[conic-gradient(#60a5fa,#ec4899,#a855f7,#60a5fa)]
-        animate-[spin_12s_linear_infinite] opacity-90
-      "
-    />
-    {/* Inner panel (creates the 'border' effect) */}
-    <span className="absolute inset-[2px] rounded-xl bg-white" />
-    {/* Content */}
-    <span className="relative z-10 flex items-center gap-2 text-sm font-semibold text-slate-900">
-      <span className="text-lg">🤖</span>
-      <span>Ask AI</span>
-    </span>
-  </button>
-</div>
-
+      <div className="fixed bottom-28 right-5 z-50">
+        <button
+          onClick={() => setOpen(v => !v)}
+          title="Ask AI"
+          aria-label="Ask AI"
+          className="
+            group relative inline-flex h-12 w-[10rem] items-center justify-center
+            overflow-hidden rounded-2xl
+            shadow-[0_10px_20px_rgba(2,6,23,.12)] transition-transform duration-200
+            active:scale-[0.98]
+          "
+        >
+          <span
+            className="
+              pointer-events-none absolute inset-0
+              bg-[conic-gradient(#60a5fa,#ec4899,#a855f7,#60a5fa)]
+              animate-[spin_12s_linear_infinite] opacity-90
+            "
+          />
+          <span className="absolute inset-[2px] rounded-xl bg-white" />
+          <span className="relative z-10 flex items-center gap-2 text-sm font-semibold text-slate-900">
+            <span className="text-lg">🤖</span>
+            <span>Ask AI</span>
+          </span>
+        </button>
+      </div>
 
       {/* Panel */}
       {open && (
-        <div className="fixed bottom-20 right-4 z-50 w-[420px] max-w-[92vw] overflow-hidden rounded-2xl border bg-white shadow-2xl">
+        <div className={panelClass}>
+          {/* Header */}
           <div className="flex items-center justify-between border-b bg-slate-50 px-4 py-3">
             <div className="font-semibold">Itinerary Planner</div>
-            <button
-              className="text-slate-500 hover:text-slate-900"
-              onClick={() => setOpen(false)}
-              aria-label="Close"
-              title="Close"
-            >
-              ✕
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                className="rounded-lg border px-2 py-1 text-xs text-slate-700 hover:bg-white"
+                onClick={() => setExpanded(v => !v)}
+                title={expanded ? 'Shrink' : 'Expand'}
+              >
+                {expanded ? 'Shrink' : 'Expand'}
+              </button>
+              <button
+                className="text-slate-500 hover:text-slate-900"
+                onClick={() => setOpen(false)}
+                aria-label="Close"
+                title="Close"
+              >
+                ✕
+              </button>
+            </div>
           </div>
 
-          <div
-            ref={scrollerRef}
-            className="max-h-80 space-y-3 overflow-y-auto px-4 py-3"
-          >
+          {/* Messages (fills available height) */}
+          <div ref={scrollerRef} className="flex-1 min-h-0 space-y-3 overflow-y-auto px-4 py-3">
             {chat.map((m, i) => (
               <div key={i} className={m.role === 'user' ? 'text-right' : 'text-left'}>
                 {m.role === 'user' ? (
-                  // USER BUBBLE
                   <div className="inline-block max-w-[85%] rounded-2xl bg-slate-900 px-3 py-2 text-left text-sm text-white">
                     {m.content}
                   </div>
                 ) : (
-                  // ASSISTANT — MARKDOWN inside a styled wrapper (no className on ReactMarkdown)
                   <div className="inline-block max-w-[95%] rounded-2xl border bg-white px-4 py-3 text-sm shadow-sm">
                     <div className="markdown-body">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -156,6 +152,7 @@ export default function AiWidget() {
             )}
           </div>
 
+          {/* Composer */}
           <div className="flex items-end gap-2 border-t p-3">
             <textarea
               value={input}
@@ -191,31 +188,14 @@ export default function AiWidget() {
   );
 }
 
-/**
- * Convert model's inline text like:
- * "**Title** **Day 1** - **Morning ...** - **9:30 ...** ..."
- * into nice markdown with headings + real bullet lines.
- */
+/** Formatting helper */
 function formatItineraryMarkdown(txt = '') {
   let t = String(txt);
-
-  // Title -> blank line -> Day headings
-  t = t.replace(/(\*\*[^*]+?\*\*)\s+(?=\*\*Day\s*\d+)/, '$1\n\n');
-
-  // Ensure each "**Day X: ...**" starts on a new line
+  t = t.replace(/(\*\*[^*]+?\*\*)\s+(?=\*\*Day\s*\d+)/, '$1\n\n');     // Title -> blank line -> Day
   t = t.replace(/\s*\*\*Day\s*(\d+[^*]*?)\*\*/g, (_m, rest) => `\n\n**Day ${rest}**`);
-
-  // Turn inline " - " bullets into real list lines
-  t = t.replace(/(\S)\s-\s/g, '$1\n- ');
-
-  // Break before bold following a paren like ")- **Next**"
-  t = t.replace(/\)\s+\*\*/g, ')\n**');
-
-  // Normalize extra whitespace
-  t = t.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
-
-  // Ensure there's at least a heading
+  t = t.replace(/(\S)\s-\s/g, '$1\n- ');                               // inline bullets => list lines
+  t = t.replace(/\)\s+\*\*/g, ')\n**');                                // break before bold after ')'
+  t = t.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();  // clean whitespace
   if (!/^\*\*.+\*\*/.test(t)) t = `**Itinerary**\n\n${t}`;
-
   return t;
 }
