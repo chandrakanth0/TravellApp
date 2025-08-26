@@ -1,0 +1,69 @@
+.card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+}
+
+.card-image {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: #f3f3f3;
+}
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.like-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: none;
+  background: #ffffffcc;
+  backdrop-filter: blur(2px);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.2s ease;
+}
+.like-btn:hover { transform: scale(1.06); }
+.like-btn.liked { background: #ffebee; color: #e53935; }
+
+.card-body { padding: 12px 14px 16px; }
+.card-title {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
+.card-location {
+  margin: 0 0 10px;
+  color: #5b6470;
+  font-size: 0.95rem;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #2b2f36;
+  font-weight: 500;
+}
+.visitors { color: #334155; }
+.rating { white-space: nowrap; }
+.rating-number {
+  margin-left: 6px;
+  color: #475569;
+  font-weight: 600;
+}
